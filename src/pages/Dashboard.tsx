@@ -50,20 +50,27 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-4"
+          className="flex flex-col items-center text-center mb-6"
         >
-          <div>
-            <p className="text-primary-foreground/80 text-sm font-semibold">Assalamu'alaikum 👋</p>
-            <h2 className="text-2xl font-black text-primary-foreground">{player.name}</h2>
+          <img 
+            src="https://i.ibb.co.com/N2Pm4GVK/Untitled-design.png" 
+            alt="Jagoan Puasa Logo" 
+            className="w-[200px] h-auto mb-4"
+          />
+          <div className="flex flex-col items-center gap-2">
+            <div>
+              <p className="text-primary-foreground/80 text-sm font-semibold">Assalamu'alaikum 👋</p>
+              <h2 className="text-2xl font-black text-primary-foreground">{player.name}</h2>
+            </div>
+            <motion.div
+              className="px-3 py-1.5 rounded-full bg-card/20 backdrop-blur-sm border border-primary-foreground/20"
+              whileHover={{ scale: 1.05 }}
+            >
+              <span className={`font-bold text-sm text-primary-foreground`}>
+                {level.emoji} {level.name}
+              </span>
+            </motion.div>
           </div>
-          <motion.div
-            className="px-3 py-1.5 rounded-full bg-card/20 backdrop-blur-sm border border-primary-foreground/20"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className={`font-bold text-sm text-primary-foreground`}>
-              {level.emoji} {level.name}
-            </span>
-          </motion.div>
         </motion.div>
 
         {/* Points Card */}
@@ -88,7 +95,10 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
 
       {/* Missions */}
       <div className="px-5 mt-6">
-        <h3 className="text-lg font-black text-foreground mb-3">📋 Misi Hari Ini</h3>
+        <h3 className="text-lg font-black text-foreground mb-1 text-center">📋 Misi Hari Ini</h3>
+        <p className="text-xs text-gold/80 italic text-center mb-4 px-4 leading-tight">
+          "Jagoan sejati itu jujur sama Allah & diri sendiri. Klik 'Selesai' cuma kalau kamu beneran udah ngerjain ya! 💪"
+        </p>
         <div className="space-y-3">
           <AnimatePresence>
             {DEFAULT_MISSIONS.map((mission, i) => {
