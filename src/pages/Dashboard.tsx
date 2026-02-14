@@ -9,8 +9,26 @@ interface DashboardProps {
   onAddPoints: (pts: number) => void;
 }
 
+function getTodayKey(kidId: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  return `jagoan_logs_${kidId}_${today}`;
+}
+
+function loadCompletedToday(kidId: string): Set<string> {
+  try {
+    const data = localStorage.getItem(getTodayKey(kidId));
+    return data ? new Set(JSON.parse(data)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveCompletedToday(kidId: string, completed: Set<string>) {
+  localStorage.setItem(getTodayKey(kidId), JSON.stringify([...completed]));
+}
+
 export default function Dashboard({ player, onAddPoints }: DashboardProps) {
-  const [completedToday, setCompletedToday] = useState<Set<string>>(new Set());
+  const [completedToday, setCompletedToday] = useState<Set<string>>(() => loadCompletedToday(player.id));
   const level = getLevel(player.points);
 
   const handleComplete = (missionId: string, points: number) => {
@@ -40,7 +58,11 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
     });
 
     onAddPoints(points);
-    setCompletedToday((prev) => new Set(prev).add(missionId));
+    setCompletedToday((prev) => {
+      const next = new Set(prev).add(missionId);
+      saveCompletedToday(player.id, next);
+      return next;
+    });
   };
 
   return (
@@ -127,13 +149,13 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
                     disabled={done}
                     className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                       done
-                        ? "bg-accent/20 text-accent"
+                        ? "bg-muted text-muted-foreground cursor-not-allowed"
                         : "gradient-teal text-accent-foreground shadow-sm"
                     }`}
                     whileHover={done ? {} : { scale: 1.05 }}
                     whileTap={done ? {} : { scale: 0.95 }}
                   >
-                    {done ? "✅" : "Selesai"}
+                    {done ? "Sudah Beres ✅" : "Selesai"}
                   </motion.button>
                 </motion.div>
               );
