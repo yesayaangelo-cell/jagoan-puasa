@@ -15,23 +15,26 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 gradient-hero">
-      {/* Decorative elements */}
+      {/* Logo Section */}
       <motion.div
-        className="text-6xl mb-2"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        🌙
-      </motion.div>
-
-      <motion.h1
-        className="text-4xl font-black text-primary-foreground mb-2 text-center"
         initial={{ scale: 0.3, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+        animate={{ 
+          scale: 1, 
+          opacity: 1,
+          y: [0, -10, 0] 
+        }}
+        transition={{ 
+          scale: { type: "spring", stiffness: 260, damping: 20 },
+          y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+        }}
+        className="mb-4"
       >
-        Jagoan Puasa
-      </motion.h1>
+        <img 
+          src="https://i.ibb.co.com/N2Pm4GVK/Untitled-design.png" 
+          alt="Jagoan Puasa Logo" 
+          className="w-[280px] h-auto"
+        />
+      </motion.div>
 
       <motion.p
         className="text-primary-foreground/80 mb-8 text-center text-lg font-semibold"
