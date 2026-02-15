@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Home, ShoppingBag, LogOut } from "lucide-react";
+import { Home, Map, ShoppingBag, LogOut } from "lucide-react";
 
 interface BottomNavProps {
-  activeTab: "home" | "shop";
-  onTabChange: (tab: "home" | "shop") => void;
+  activeTab: "home" | "map" | "shop";
+  onTabChange: (tab: "home" | "map" | "shop") => void;
   onLogout: () => void;
 }
 
@@ -16,6 +16,12 @@ export default function BottomNav({ activeTab, onTabChange, onLogout }: BottomNa
           label="Home"
           active={activeTab === "home"}
           onClick={() => onTabChange("home")}
+        />
+        <NavButton
+          icon={<Map size={22} />}
+          label="Peta"
+          active={activeTab === "map"}
+          onClick={() => onTabChange("map")}
         />
         <NavButton
           icon={<ShoppingBag size={22} />}

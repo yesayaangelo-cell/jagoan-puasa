@@ -4,11 +4,12 @@ import { usePlayer } from "@/hooks/usePlayer";
 import LoginPage from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import ShopPage from "@/pages/Shop";
+import RamadanMap from "@/pages/RamadanMap";
 import BottomNav from "@/components/BottomNav";
 
 const App = () => {
   const { player, loading, login, addPoints, spendPoints, logout } = usePlayer();
-  const [activeTab, setActiveTab] = useState<"home" | "shop">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "map" | "shop">("home");
 
   if (loading) {
     return (
@@ -31,7 +32,7 @@ const App = () => {
   return (
     <div className="max-w-md mx-auto relative">
       <AnimatePresence mode="wait">
-        {activeTab === "home" ? (
+        {activeTab === "home" && (
           <motion.div
             key="home"
             initial={{ opacity: 0, x: -20 }}
@@ -41,7 +42,19 @@ const App = () => {
           >
             <Dashboard player={player} onAddPoints={addPoints} />
           </motion.div>
-        ) : (
+        )}
+        {activeTab === "map" && (
+          <motion.div
+            key="map"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            <RamadanMap />
+          </motion.div>
+        )}
+        {activeTab === "shop" && (
           <motion.div
             key="shop"
             initial={{ opacity: 0, x: 20 }}
