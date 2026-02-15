@@ -12,11 +12,12 @@ export const DEFAULT_MISSIONS: Mission[] = [
 ];
 
 export const DEFAULT_REWARDS: Reward[] = [
-  { id: "r1", title: "Es Krim 🍦", cost: 200, icon: "🍦" },
-  { id: "r2", title: "Mainan Baru 🎮", cost: 1000, icon: "🎮" },
-  { id: "r3", title: "Buku Cerita 📚", cost: 300, icon: "📚" },
-  { id: "r5", title: "Stiker Keren ✨", cost: 100, icon: "✨" },
-  { id: "r4", title: "✈️ LIBURAN SPESIAL LEBARAN", cost: 5000, icon: "✈️", isGrandPrize: true },
+  { id: "r1", title: "Tambahan Main HP (30 Menit)", cost: 300, icon: "📱" },
+  { id: "r2", title: "Request Menu Buka Puasa", cost: 500, icon: "🍔" },
+  { id: "r3", title: "Tiket Bebas Beresin Kasur", cost: 600, icon: "🛏️" },
+  { id: "r4", title: "Jajan Mart (Rp 10.000)", cost: 1500, icon: "🛒" },
+  { id: "r5", title: "Kartu Sakti 'Anti Omel'", cost: 3000, icon: "🛡️" },
+  { id: "r6", title: "✈️ LIBURAN SPESIAL LEBARAN", cost: 5000, icon: "✈️", isGrandPrize: true },
 ];
 
 export function getLevel(points: number): { name: string; emoji: string; color: string } {
