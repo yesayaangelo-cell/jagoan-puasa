@@ -118,7 +118,7 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
       {/* Missions */}
       <div className="px-5 mt-6">
         <h3 className="text-lg font-black text-foreground mb-1 text-center">📋 Misi Hari Ini</h3>
-        <p className="text-xs text-gold/80 italic text-center mb-4 px-4 leading-tight">
+        <p className="text-xs text-purple-800 italic text-center mb-4 px-4 leading-tight">
           "Jagoan sejati itu jujur sama Allah & diri sendiri. Klik 'Selesai' cuma kalau kamu beneran udah ngerjain ya! 💪"
         </p>
         <div className="space-y-3">
