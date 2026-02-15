@@ -48,6 +48,62 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
         {DEFAULT_REWARDS.map((reward, i) => {
           const canBuy = player.points >= reward.cost && !boughtItems.has(reward.id);
           const bought = boughtItems.has(reward.id);
+          const isGrand = reward.isGrandPrize;
+
+          if (isGrand) {
+            return (
+              <motion.div
+                key={reward.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i }}
+                className={`relative p-5 rounded-2xl border-2 transition-all overflow-hidden ${
+                  bought
+                    ? "border-accent/30 opacity-70"
+                    : "border-gold shadow-[0_0_20px_hsl(var(--gold)/0.4)]"
+                }`}
+                style={{
+                  background: bought
+                    ? "hsl(var(--accent) / 0.1)"
+                    : "linear-gradient(135deg, hsl(var(--gold) / 0.15), hsl(var(--card)))",
+                }}
+              >
+                {!bought && (
+                  <div className="absolute inset-0 rounded-2xl animate-pulse pointer-events-none border-2 border-gold/30" />
+                )}
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-xs font-black tracking-widest text-gold uppercase">🏆 Grand Prize</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">{reward.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-black text-lg ${bought ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                      {reward.title}
+                    </p>
+                    <p className="text-gold font-black text-base">{reward.cost} poin ⭐</p>
+                    <p className="text-xs text-muted-foreground italic mt-1">
+                      Hadiah Utama! Syarat: Puasa TIDAK BOLEH BOLONG (Full 30 Hari). Kalau bolong, poin hangus!
+                    </p>
+                  </div>
+                </div>
+                <motion.button
+                  onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
+                  disabled={!canBuy}
+                  className={`w-full mt-3 px-4 py-3 rounded-xl font-black text-sm transition-all ${
+                    bought
+                      ? "bg-accent/20 text-accent"
+                      : canBuy
+                      ? "gradient-gold text-gold-foreground shadow-gold"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                  whileHover={canBuy ? { scale: 1.03 } : {}}
+                  whileTap={canBuy ? { scale: 0.97 } : {}}
+                >
+                  {bought ? "✅ Dibeli" : `Tukar ${reward.cost} Poin`}
+                </motion.button>
+              </motion.div>
+            );
+          }
 
           return (
             <motion.div

@@ -15,8 +15,8 @@ export const DEFAULT_REWARDS: Reward[] = [
   { id: "r1", title: "Es Krim 🍦", cost: 200, icon: "🍦" },
   { id: "r2", title: "Mainan Baru 🎮", cost: 1000, icon: "🎮" },
   { id: "r3", title: "Buku Cerita 📚", cost: 300, icon: "📚" },
-  { id: "r4", title: "Jalan-Jalan 🎡", cost: 1500, icon: "🎡" },
   { id: "r5", title: "Stiker Keren ✨", cost: 100, icon: "✨" },
+  { id: "r4", title: "✈️ LIBURAN SPESIAL LEBARAN", cost: 5000, icon: "✈️", isGrandPrize: true },
 ];
 
 export function getLevel(points: number): { name: string; emoji: string; color: string } {

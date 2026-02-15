@@ -18,6 +18,7 @@ export interface Reward {
   title: string;
   cost: number;
   icon: string;
+  isGrandPrize?: boolean;
 }
 
 export interface MissionLog {
