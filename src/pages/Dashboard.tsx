@@ -138,16 +138,26 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
       {/* Premium Features OR Upgrade Card */}
       {player.is_premium ? (
         <div className="px-5 mt-4 space-y-3">
-          {/* Avatar Customizer Button */}
-          <motion.button
-            onClick={() => toast.info("Avatar Customizer segera hadir! 🎨")}
-            className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center justify-center gap-2"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Palette size={16} />
-            🎨 Avatar Customizer
-          </motion.button>
+          {/* Avatar Editor Section */}
+          <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
+            <h3 className="text-base font-black text-foreground text-center mb-3">
+              🎨 Avatar Jagoan Lo
+            </h3>
+            <div className="flex items-center gap-4 justify-center">
+              <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center text-5xl border-2 border-primary/20">
+                {player.avatar}
+              </div>
+              <motion.button
+                onClick={() => toast.info("Fitur Ganti Gaya segera hadir! 👕")}
+                className="px-5 py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Palette size={16} />
+                Ganti Gaya 👕
+              </motion.button>
+            </div>
+          </div>
 
           {/* Leaderboard Squad */}
           <LeaderboardSquad currentUserId={userId} />
