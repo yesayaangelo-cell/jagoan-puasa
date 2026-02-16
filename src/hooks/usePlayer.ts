@@ -1,87 +1,110 @@
 import { useState, useEffect, useCallback } from "react";
-import type { Kid } from "@/types";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-const STORAGE_KEY = "jagoan_puasa_kid_id";
-const KIDS_STORAGE = "jagoan_puasa_kids";
-
-function loadKids(): Kid[] {
-  try {
-    const data = localStorage.getItem(KIDS_STORAGE);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveKids(kids: Kid[]) {
-  localStorage.setItem(KIDS_STORAGE, JSON.stringify(kids));
+export interface Profile {
+  id: string;
+  name: string;
+  points: number;
+  avatar: string;
+  is_premium: boolean;
 }
 
 export function usePlayer() {
-  const [player, setPlayer] = useState<Kid | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch profile from DB
+  const fetchProfile = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .maybeSingle();
+    if (data) {
+      setProfile(data as Profile);
+    }
+  }, []);
+
   useEffect(() => {
-    const savedId = localStorage.getItem(STORAGE_KEY);
-    if (savedId) {
-      const kids = loadKids();
-      const found = kids.find((k) => k.id === savedId);
-      if (found) setPlayer(found);
-    }
-    setLoading(false);
-  }, []);
+    // Set up auth listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        const u = session?.user ?? null;
+        setUser(u);
+        if (u) {
+          // Use setTimeout to avoid Supabase deadlock
+          setTimeout(() => fetchProfile(u.id), 0);
+        } else {
+          setProfile(null);
+        }
+        setLoading(false);
+      }
+    );
 
-  const login = useCallback((name: string) => {
-    const kids = loadKids();
-    const trimmed = name.trim();
-    const existing = kids.find((k) => k.name.toLowerCase() === trimmed.toLowerCase());
-
-    if (existing) {
-      localStorage.setItem(STORAGE_KEY, existing.id);
-      setPlayer(existing);
-      return existing;
-    }
-
-    const newKid: Kid = {
-      id: Date.now().toString(),
-      name: trimmed,
-      points: 0,
-      avatar: "🧒",
-    };
-    const updated = [...kids, newKid];
-    saveKids(updated);
-    localStorage.setItem(STORAGE_KEY, newKid.id);
-    setPlayer(newKid);
-    return newKid;
-  }, []);
-
-  const addPoints = useCallback((pts: number) => {
-    setPlayer((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, points: prev.points + pts };
-      const kids = loadKids().map((k) => (k.id === updated.id ? updated : k));
-      saveKids(kids);
-      return updated;
+    // Then check existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) {
+        fetchProfile(u.id);
+      } else {
+        setLoading(false);
+      }
     });
-  }, []);
 
-  const spendPoints = useCallback((pts: number): boolean => {
-    let success = false;
-    setPlayer((prev) => {
-      if (!prev || prev.points < pts) return prev;
-      success = true;
-      const updated = { ...prev, points: prev.points - pts };
-      const kids = loadKids().map((k) => (k.id === updated.id ? updated : k));
-      saveKids(kids);
-      return updated;
+    return () => subscription.unsubscribe();
+  }, [fetchProfile]);
+
+  const signUp = useCallback(async (email: string, password: string, name: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+        emailRedirectTo: window.location.origin,
+      },
     });
-    return success;
+    if (error) throw error;
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
-    setPlayer(null);
+  const signIn = useCallback(async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   }, []);
 
-  return { player, loading, login, addPoints, spendPoints, logout };
+  const addPoints = useCallback(async (pts: number) => {
+    if (!profile) return;
+    const newPoints = profile.points + pts;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ points: newPoints })
+      .eq("id", profile.id);
+    if (!error) {
+      setProfile((prev) => prev ? { ...prev, points: newPoints } : prev);
+    }
+  }, [profile]);
+
+  const spendPoints = useCallback(async (pts: number): Promise<boolean> => {
+    if (!profile || profile.points < pts) return false;
+    const newPoints = profile.points - pts;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ points: newPoints })
+      .eq("id", profile.id);
+    if (!error) {
+      setProfile((prev) => prev ? { ...prev, points: newPoints } : prev);
+      return true;
+    }
+    return false;
+  }, [profile]);
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+  }, []);
+
+  return { user, profile, loading, signUp, signIn, addPoints, spendPoints, logout, fetchProfile };
 }

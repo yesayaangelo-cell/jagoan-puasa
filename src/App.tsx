@@ -1,14 +1,17 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePlayer } from "@/hooks/usePlayer";
+import { Toaster } from "sonner";
 import LoginPage from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import ShopPage from "@/pages/Shop";
 import RamadanMap from "@/pages/RamadanMap";
+import AdminPanel from "@/pages/AdminPanel";
 import BottomNav from "@/components/BottomNav";
 
-const App = () => {
-  const { player, loading, login, addPoints, spendPoints, logout } = usePlayer();
+function MainApp() {
+  const { user, profile, loading, signUp, signIn, addPoints, spendPoints, logout } = usePlayer();
   const [activeTab, setActiveTab] = useState<"home" | "map" | "shop">("home");
 
   if (loading) {
@@ -25,8 +28,8 @@ const App = () => {
     );
   }
 
-  if (!player) {
-    return <LoginPage onLogin={login} />;
+  if (!user || !profile) {
+    return <LoginPage onSignIn={signIn} onSignUp={signUp} />;
   }
 
   return (
@@ -40,7 +43,7 @@ const App = () => {
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.2 }}
           >
-            <Dashboard player={player} onAddPoints={addPoints} />
+            <Dashboard player={profile} userId={user.id} onAddPoints={addPoints} />
           </motion.div>
         )}
         {activeTab === "map" && (
@@ -62,13 +65,23 @@ const App = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <ShopPage player={player} onSpend={spendPoints} />
+            <ShopPage player={profile} onSpend={spendPoints} />
           </motion.div>
         )}
       </AnimatePresence>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onLogout={logout} />
     </div>
   );
-};
+}
+
+const App = () => (
+  <BrowserRouter>
+    <Toaster position="top-center" richColors />
+    <Routes>
+      <Route path="/admin-panel-rahasia" element={<AdminPanel />} />
+      <Route path="/*" element={<MainApp />} />
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;
