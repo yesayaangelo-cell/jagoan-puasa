@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_MISSIONS, getLevel } from "@/data/gameData";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
+import LeaderboardSquad from "@/components/LeaderboardSquad";
 
 interface DashboardProps {
   player: Profile;
@@ -134,8 +135,24 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
         </motion.div>
       </div>
 
-      {/* Upgrade Premium Button */}
-      {!player.is_premium && (
+      {/* Premium Features OR Upgrade Card */}
+      {player.is_premium ? (
+        <div className="px-5 mt-4 space-y-3">
+          {/* Avatar Customizer Button */}
+          <motion.button
+            onClick={() => toast.info("Avatar Customizer segera hadir! 🎨")}
+            className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Palette size={16} />
+            🎨 Avatar Customizer
+          </motion.button>
+
+          {/* Leaderboard Squad */}
+          <LeaderboardSquad currentUserId={userId} />
+        </div>
+      ) : (
         <div className="px-5 mt-4">
           <motion.button
             onClick={handleUpgrade}
