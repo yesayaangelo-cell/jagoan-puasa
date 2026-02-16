@@ -6,6 +6,7 @@ import { DEFAULT_MISSIONS, getLevel } from "@/data/gameData";
 import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
 import LeaderboardSquad from "@/components/LeaderboardSquad";
+import AvatarPicker from "@/components/AvatarPicker";
 
 interface DashboardProps {
   player: Profile;
@@ -34,6 +35,8 @@ function saveCompletedToday(kidId: string, completed: Set<string>) {
 export default function Dashboard({ player, userId, onAddPoints }: DashboardProps) {
   const [completedToday, setCompletedToday] = useState<Set<string>>(() => loadCompletedToday(player.id));
   const [copied, setCopied] = useState(false);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const [currentAvatar, setCurrentAvatar] = useState(player.avatar);
   const level = getLevel(player.points);
 
   const handleComplete = (missionId: string, points: number) => {
@@ -145,10 +148,10 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
             </h3>
             <div className="flex items-center gap-4 justify-center">
               <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center text-5xl border-2 border-primary/20">
-                {player.avatar}
+                {currentAvatar}
               </div>
               <motion.button
-                onClick={() => toast.info("Fitur Ganti Gaya segera hadir! 👕")}
+                onClick={() => setAvatarPickerOpen(true)}
                 className="px-5 py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -158,6 +161,14 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
               </motion.button>
             </div>
           </div>
+
+          <AvatarPicker
+            open={avatarPickerOpen}
+            onOpenChange={setAvatarPickerOpen}
+            currentAvatar={currentAvatar}
+            userId={player.id}
+            onAvatarChange={setCurrentAvatar}
+          />
 
           {/* Leaderboard Squad */}
           <LeaderboardSquad currentUserId={userId} />
