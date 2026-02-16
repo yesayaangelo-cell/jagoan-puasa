@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import type { Kid } from "@/types";
+import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_MISSIONS, getLevel } from "@/data/gameData";
+import { Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 
 interface DashboardProps {
-  player: Kid;
+  player: Profile;
+  userId: string;
   onAddPoints: (pts: number) => void;
 }
 
@@ -27,14 +30,14 @@ function saveCompletedToday(kidId: string, completed: Set<string>) {
   localStorage.setItem(getTodayKey(kidId), JSON.stringify([...completed]));
 }
 
-export default function Dashboard({ player, onAddPoints }: DashboardProps) {
+export default function Dashboard({ player, userId, onAddPoints }: DashboardProps) {
   const [completedToday, setCompletedToday] = useState<Set<string>>(() => loadCompletedToday(player.id));
+  const [copied, setCopied] = useState(false);
   const level = getLevel(player.points);
 
   const handleComplete = (missionId: string, points: number) => {
     if (completedToday.has(missionId)) return;
 
-    // Sound effect
     try {
       const ctx = new AudioContext();
       const osc = ctx.createOscillator();
@@ -49,7 +52,6 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
       osc.stop(ctx.currentTime + 0.3);
     } catch {}
 
-    // Confetti
     confetti({
       particleCount: 80,
       spread: 60,
@@ -65,6 +67,18 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
     });
   };
 
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(userId);
+    setCopied(true);
+    toast.success("User ID disalin!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleUpgrade = () => {
+    const text = encodeURIComponent(`Halo Admin, saya mau aktifkan Premium Jagoan Puasa. Mohon dibantu. User ID: ${userId}`);
+    window.open(`https://wa.me/6285157778929?text=${text}`, "_blank");
+  };
+
   return (
     <div className="min-h-screen pb-24 bg-background">
       {/* Header */}
@@ -74,9 +88,9 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center text-center mb-6"
         >
-          <img 
-            src="https://i.ibb.co.com/N2Pm4GVK/Untitled-design.png" 
-            alt="Jagoan Puasa Logo" 
+          <img
+            src="https://i.ibb.co.com/N2Pm4GVK/Untitled-design.png"
+            alt="Jagoan Puasa Logo"
             className="w-[200px] h-auto mb-4"
           />
           <div className="flex flex-col items-center gap-2">
@@ -88,10 +102,15 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
               className="px-3 py-1.5 rounded-full bg-card/20 backdrop-blur-sm border border-primary-foreground/20"
               whileHover={{ scale: 1.05 }}
             >
-              <span className={`font-bold text-sm text-primary-foreground`}>
+              <span className="font-bold text-sm text-primary-foreground">
                 {level.emoji} {level.name}
               </span>
             </motion.div>
+            {player.is_premium && (
+              <span className="px-3 py-1 rounded-full gradient-gold text-gold-foreground text-xs font-black">
+                ⭐ PREMIUM
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -114,6 +133,20 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
           </motion.p>
         </motion.div>
       </div>
+
+      {/* Upgrade Premium Button */}
+      {!player.is_premium && (
+        <div className="px-5 mt-4">
+          <motion.button
+            onClick={handleUpgrade}
+            className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            ⭐ UPGRADE PREMIUM (Rp 15.000)
+          </motion.button>
+        </div>
+      )}
 
       {/* Missions */}
       <div className="px-5 mt-6">
@@ -161,6 +194,21 @@ export default function Dashboard({ player, onAddPoints }: DashboardProps) {
               );
             })}
           </AnimatePresence>
+        </div>
+      </div>
+
+      {/* User ID Display */}
+      <div className="px-5 mt-8 mb-4">
+        <div className="bg-card rounded-2xl p-4 border border-border text-center space-y-2">
+          <p className="text-xs text-muted-foreground font-semibold">User ID kamu:</p>
+          <p className="text-xs font-mono text-foreground break-all">{userId}</p>
+          <button
+            onClick={handleCopyId}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-muted-foreground text-xs font-bold hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            {copied ? "Tersalin!" : "Copy ID"}
+          </button>
         </div>
       </div>
     </div>

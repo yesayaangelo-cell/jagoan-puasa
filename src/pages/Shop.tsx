@@ -1,22 +1,22 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
-import type { Kid } from "@/types";
+import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_REWARDS } from "@/data/gameData";
 
 interface ShopPageProps {
-  player: Kid;
-  onSpend: (pts: number) => boolean;
+  player: Profile;
+  onSpend: (pts: number) => Promise<boolean>;
 }
 
 export default function ShopPage({ player, onSpend }: ShopPageProps) {
   const [showTicket, setShowTicket] = useState<string | null>(null);
   const [boughtItems, setBoughtItems] = useState<Set<string>>(new Set());
 
-  const handleBuy = (rewardId: string, cost: number, title: string) => {
+  const handleBuy = async (rewardId: string, cost: number, title: string) => {
     if (player.points < cost) return;
 
-    const success = onSpend(cost);
+    const success = await onSpend(cost);
     if (!success) return;
 
     confetti({
