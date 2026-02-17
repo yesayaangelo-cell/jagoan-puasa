@@ -14,10 +14,11 @@ interface UpgradeModalProps {
 
 export default function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
   const handleUpgrade = () => {
-    window.open(
-      "https://wa.me/6285157778929?text=Min+saya+mau+Upgrade+Premium",
-      "_blank"
-    );
+    const link = document.createElement("a");
+    link.href = "https://wa.me/6285157778929?text=Halo+Admin+saya+mau+Upgrade+Premium";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.click();
   };
 
   return (
