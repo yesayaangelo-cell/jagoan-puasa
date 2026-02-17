@@ -171,18 +171,21 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
           />
 
           {/* Leaderboard Squad */}
-          <LeaderboardSquad currentUserId={userId} />
+          <LeaderboardSquad currentUserId={userId} isPremium={true} />
         </div>
       ) : (
-        <div className="px-5 mt-4">
+        <div className="px-5 mt-4 space-y-3">
           <motion.button
             onClick={handleUpgrade}
             className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            ⭐ UPGRADE PREMIUM (Rp 15.000)
+            ⭐ UPGRADE PREMIUM (Rp 19.000)
           </motion.button>
+
+          {/* Leaderboard for free users too */}
+          <LeaderboardSquad currentUserId={userId} isPremium={false} />
         </div>
       )}
 
