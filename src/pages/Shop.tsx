@@ -16,11 +16,6 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const handleBuy = async (rewardId: string, cost: number, title: string) => {
-    if (!player.is_premium) {
-      setUpgradeOpen(true);
-      return;
-    }
-
     if (player.points < cost) return;
 
     const success = await onSpend(cost);
@@ -36,6 +31,10 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
     setBoughtItems((prev) => new Set(prev).add(rewardId));
     setShowTicket(title);
     setTimeout(() => setShowTicket(null), 2500);
+  };
+
+  const handleUpgrade = () => {
+    setUpgradeOpen(true);
   };
 
   return (
@@ -103,7 +102,7 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                   </div>
                 </div>
                 <motion.button
-                  onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
+                  onClick={!player.is_premium ? handleUpgrade : () => handleBuy(reward.id, reward.cost, reward.title)}
                   disabled={bought}
                   className={`w-full mt-3 px-4 py-3 rounded-xl font-black text-sm transition-all ${
                     bought
@@ -143,7 +142,7 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                 <p className="text-sm text-gold font-bold">{reward.cost} poin</p>
               </div>
               <motion.button
-                onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
+                onClick={!player.is_premium ? handleUpgrade : () => handleBuy(reward.id, reward.cost, reward.title)}
                 disabled={bought}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   bought
