@@ -115,7 +115,11 @@ export default function LeaderboardSquad({
                 <span className="text-lg w-7 text-center font-black">
                   {i < 3 ? medals[i] : `${i + 1}`}
                 </span>
-                <span className="text-2xl">{entry.avatar}</span>
+                {entry.avatar.startsWith("http") ? (
+                  <img src={entry.avatar} alt="avatar" className="w-8 h-8 rounded-full" />
+                ) : (
+                  <span className="text-2xl">{entry.avatar}</span>
+                )}
                 <div className="flex-1 min-w-0">
                   <p className={`font-bold text-sm truncate ${isMe ? "text-primary" : "text-foreground"}`}>
                     {entry.name} {isMe && "(Kamu)"}
