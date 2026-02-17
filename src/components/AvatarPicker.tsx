@@ -4,7 +4,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const AVATAR_PRESETS = ["🧒", "👳‍♂️", "🧕", "🧢", "👦", "👧", "🧑‍🎓", "👨‍🚀", "🦸"];
+const DICEBEAR_SEEDS = [
+  "Felix", "Aneka", "Lily", "Max", "Zoe", "Milo", "Luna", "Leo",
+  "Nadia", "Omar", "Sari", "Rafi", "Aisha", "Budi", "Citra",
+  "Dimas", "Eka", "Fajar", "Gita", "Hana", "Indra", "Joko",
+  "Kiki", "Laras", "Maya", "Nisa",
+];
+
+function getDiceBearUrl(seed: string) {
+  return `https://api.dicebear.com/9.x/micah/svg?seed=${seed}`;
+}
 
 interface AvatarPickerProps {
   open: boolean;
@@ -43,27 +52,36 @@ export default function AvatarPicker({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xs rounded-2xl">
+      <DialogContent className="max-w-sm rounded-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-center font-black">
             🎨 Pilih Avatar Jagoan
           </DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-3 gap-3 py-4">
-          {AVATAR_PRESETS.map((emoji) => (
-            <motion.button
-              key={emoji}
-              onClick={() => setSelected(emoji)}
-              className={`text-4xl p-3 rounded-xl border-2 transition-all ${
-                selected === emoji
-                  ? "border-primary bg-primary/10 scale-110"
-                  : "border-border bg-muted/40 hover:border-primary/50"
-              }`}
-              whileTap={{ scale: 0.9 }}
-            >
-              {emoji}
-            </motion.button>
-          ))}
+        <div className="grid grid-cols-4 gap-2 py-4">
+          {DICEBEAR_SEEDS.map((seed) => {
+            const url = getDiceBearUrl(seed);
+            const isSelected = selected === url;
+            return (
+              <motion.button
+                key={seed}
+                onClick={() => setSelected(url)}
+                className={`p-2 rounded-xl border-2 transition-all ${
+                  isSelected
+                    ? "border-primary bg-primary/10 scale-105"
+                    : "border-border bg-muted/40 hover:border-primary/50"
+                }`}
+                whileTap={{ scale: 0.9 }}
+              >
+                <img
+                  src={url}
+                  alt={seed}
+                  className="w-full h-auto rounded-lg"
+                  loading="lazy"
+                />
+              </motion.button>
+            );
+          })}
         </div>
         <motion.button
           onClick={handleSave}

@@ -7,6 +7,7 @@ import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
 import LeaderboardSquad from "@/components/LeaderboardSquad";
 import AvatarPicker from "@/components/AvatarPicker";
+import UpgradeModal from "@/components/UpgradeModal";
 
 interface DashboardProps {
   player: Profile;
@@ -37,6 +38,7 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
   const [copied, setCopied] = useState(false);
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState(player.avatar);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const level = getLevel(player.points);
 
   const handleComplete = (missionId: string, points: number) => {
@@ -142,43 +144,9 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
         </motion.div>
       </div>
 
-      {/* Premium Features OR Upgrade Card */}
-      {player.is_premium ? (
-        <div className="px-5 mt-4 space-y-3">
-          {/* Avatar Editor Section */}
-          <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
-            <h3 className="text-base font-black text-foreground text-center mb-3">
-              🎨 Avatar Jagoan Lo
-            </h3>
-            <div className="flex items-center gap-4 justify-center">
-              <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center text-5xl border-2 border-primary/20">
-                {currentAvatar}
-              </div>
-              <motion.button
-                onClick={() => setAvatarPickerOpen(true)}
-                className="px-5 py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Palette size={16} />
-                Ganti Gaya 👕
-              </motion.button>
-            </div>
-          </div>
-
-          <AvatarPicker
-            open={avatarPickerOpen}
-            onOpenChange={setAvatarPickerOpen}
-            currentAvatar={currentAvatar}
-            userId={player.id}
-            onAvatarChange={setCurrentAvatar}
-          />
-
-          {/* Leaderboard Squad */}
-          <LeaderboardSquad currentUserId={userId} isPremium={true} />
-        </div>
-      ) : (
-        <div className="px-5 mt-4 space-y-3">
+      {/* Features section - visible to all */}
+      <div className="px-5 mt-4 space-y-3">
+        {!player.is_premium && (
           <motion.button
             onClick={handleUpgrade}
             className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold"
@@ -187,11 +155,53 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
           >
             ⭐ UPGRADE PREMIUM (Rp 19.000)
           </motion.button>
+        )}
 
-          {/* Leaderboard for free users too */}
-          <LeaderboardSquad currentUserId={userId} isPremium={false} />
+        {/* Avatar Editor Section - visible to all, gated on click */}
+        <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
+          <h3 className="text-base font-black text-foreground text-center mb-3">
+            🎨 Avatar Jagoan Lo
+          </h3>
+          <div className="flex items-center gap-4 justify-center">
+            <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center border-2 border-primary/20 overflow-hidden">
+              {currentAvatar.startsWith("http") ? (
+                <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-5xl">{currentAvatar}</span>
+              )}
+            </div>
+            <motion.button
+              onClick={() => {
+                if (!player.is_premium) {
+                  setUpgradeOpen(true);
+                } else {
+                  setAvatarPickerOpen(true);
+                }
+              }}
+              className="px-5 py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Palette size={16} />
+              {player.is_premium ? "Ganti Gaya 👕" : "🔒 Ganti Gaya"}
+            </motion.button>
+          </div>
         </div>
-      )}
+
+        <AvatarPicker
+          open={avatarPickerOpen}
+          onOpenChange={setAvatarPickerOpen}
+          currentAvatar={currentAvatar}
+          userId={player.id}
+          onAvatarChange={setCurrentAvatar}
+        />
+
+        {/* Leaderboard Squad - visible to all */}
+        <LeaderboardSquad currentUserId={userId} isPremium={player.is_premium} />
+      </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
 
       {/* Missions */}
       <div className="px-5 mt-6">
