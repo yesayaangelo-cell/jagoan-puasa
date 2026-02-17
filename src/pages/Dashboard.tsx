@@ -73,10 +73,32 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
   };
 
   const handleCopyId = () => {
-    navigator.clipboard.writeText(userId);
-    setCopied(true);
-    toast.success("User ID disalin!");
-    setTimeout(() => setCopied(false), 2000);
+    const copyToClipboard = async (text: string) => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-9999px";
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textArea);
+        }
+        setCopied(true);
+        toast.success("User ID disalin!");
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy: ", err);
+        toast.error("Gagal menyalin ID.");
+        setCopied(false);
+      }
+    };
+
+    copyToClipboard(userId);
   };
 
   const handleUpgrade = () => {

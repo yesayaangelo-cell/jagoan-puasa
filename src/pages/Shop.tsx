@@ -52,9 +52,13 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
       {/* Premium teaser badge for free users */}
       {!player.is_premium && (
         <div className="px-5 mt-4">
-          <div className="bg-gold/10 border border-gold/30 rounded-2xl p-3 text-center">
+          <button
+            onClick={handleUpgrade}
+            className="w-full text-left bg-gold/10 border border-gold/30 rounded-2xl p-3 text-center transition-colors hover:bg-gold/20 hover:border-gold/40"
+          >
             <p className="text-xs font-bold text-gold">🔒 Upgrade Premium untuk tukar poin!</p>
-          </div>
+            <p className="text-xs text-gold/80 mt-1">Klik di sini untuk melihat opsi upgrade dan membuka semua hadiah.</p>
+          </button>
         </div>
       )}
 
@@ -102,21 +106,25 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                   </div>
                 </div>
                 <motion.button
-                  onClick={!player.is_premium ? handleUpgrade : () => handleBuy(reward.id, reward.cost, reward.title)}
-                  disabled={bought}
+                  onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
+                  disabled={bought || !player.is_premium || player.points < reward.cost}
                   className={`w-full mt-3 px-4 py-3 rounded-xl font-black text-sm transition-all ${
                     bought
                       ? "bg-accent/20 text-accent"
-                      : canBuy
-                      ? "gradient-gold text-gold-foreground shadow-gold"
-                      : !player.is_premium
-                      ? "gradient-gold text-gold-foreground shadow-gold opacity-90"
-                      : "bg-muted text-muted-foreground"
+                      : !player.is_premium || player.points < reward.cost
+                      ? "bg-muted text-muted-foreground"
+                      : "gradient-gold text-gold-foreground shadow-gold"
                   }`}
-                  whileHover={!bought ? { scale: 1.03 } : {}}
-                  whileTap={!bought ? { scale: 0.97 } : {}}
+                  whileHover={!bought && player.is_premium && player.points >= reward.cost ? { scale: 1.03 } : {}}
+                  whileTap={!bought && player.is_premium && player.points >= reward.cost ? { scale: 0.97 } : {}}
                 >
-                  {bought ? "✅ Dibeli" : !player.is_premium ? "🔒 Tukar Poin" : `Tukar ${reward.cost} Poin`}
+                  {bought
+                    ? "✅ Dibeli"
+                    : !player.is_premium
+                    ? "🔒 Premium Saja"
+                    : player.points < reward.cost
+                    ? "Poin Tidak Cukup"
+                    : `Tukar ${reward.cost} Poin`}
                 </motion.button>
               </motion.div>
             );
@@ -142,21 +150,25 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                 <p className="text-sm text-gold font-bold">{reward.cost} poin</p>
               </div>
               <motion.button
-                onClick={!player.is_premium ? handleUpgrade : () => handleBuy(reward.id, reward.cost, reward.title)}
-                disabled={bought}
+                onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
+                disabled={bought || !player.is_premium || player.points < reward.cost}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   bought
                     ? "bg-accent/20 text-accent"
-                    : canBuy
-                    ? "gradient-hero text-primary-foreground shadow-button"
-                    : !player.is_premium
-                    ? "gradient-hero text-primary-foreground shadow-button opacity-90"
-                    : "bg-muted text-muted-foreground"
+                    : !player.is_premium || player.points < reward.cost
+                    ? "bg-muted text-muted-foreground"
+                    : "gradient-hero text-primary-foreground shadow-button"
                 }`}
-                whileHover={!bought ? { scale: 1.05 } : {}}
-                whileTap={!bought ? { scale: 0.95 } : {}}
+                whileHover={!bought && player.is_premium && player.points >= reward.cost ? { scale: 1.05 } : {}}
+                whileTap={!bought && player.is_premium && player.points >= reward.cost ? { scale: 0.95 } : {}}
               >
-                {bought ? "✅ Dibeli" : !player.is_premium ? "🔒 Beli" : "Beli"}
+                {bought
+                  ? "✅ Dibeli"
+                  : !player.is_premium
+                  ? "🔒 Premium"
+                  : player.points < reward.cost
+                  ? "Poin Kurang"
+                  : "Beli"}
               </motion.button>
             </motion.div>
           );
