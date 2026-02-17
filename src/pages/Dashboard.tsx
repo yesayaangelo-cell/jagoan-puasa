@@ -80,7 +80,11 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
 
   const handleUpgrade = () => {
     const text = encodeURIComponent(`Halo Admin, saya mau aktifkan Premium Jagoan Puasa. Mohon dibantu. User ID: ${userId}`);
-    window.open(`https://wa.me/6285157778929?text=${text}`, "_blank");
+    const link = document.createElement("a");
+    link.href = `https://wa.me/6285157778929?text=${text}`;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.click();
   };
 
   return (
