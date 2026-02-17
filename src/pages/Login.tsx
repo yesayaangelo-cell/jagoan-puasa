@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 interface LoginPageProps {
   onSignIn: (email: string, password: string) => Promise<void>;
-  onSignUp: (email: string, password: string, name: string) => Promise<void>;
+  onSignUp: (email: string, password: string, name: string, ref: string | null) => Promise<void>;
 }
 
 export default function LoginPage({ onSignIn, onSignUp }: LoginPageProps) {
@@ -13,6 +13,17 @@ export default function LoginPage({ onSignIn, onSignUp }: LoginPageProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferralCode(ref);
+      setIsSignUp(true); // Auto-switch to sign up form
+      toast.info(`Kamu diajak oleh teman! Daftar untuk gabung gengnya.`);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +33,7 @@ export default function LoginPage({ onSignIn, onSignUp }: LoginPageProps) {
     setSubmitting(true);
     try {
       if (isSignUp) {
-        await onSignUp(email.trim(), password, name.trim());
+        await onSignUp(email.trim(), password, name.trim(), referralCode);
         toast.success("Akun berhasil dibuat! Cek email untuk verifikasi.");
       } else {
         await onSignIn(email.trim(), password);

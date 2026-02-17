@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getLevel } from "@/data/gameData";
 import { toast } from "sonner";
@@ -47,15 +47,29 @@ export default function LeaderboardSquad({
     fetchData();
   }, [currentUserId]);
 
+  const getReferralLink = () => {
+    return `${window.location.origin}/auth?ref=${referralCode}`;
+  };
+
   const handleCopyReferral = () => {
     if (!isPremium) {
       setUpgradeOpen(true);
       return;
     }
-    navigator.clipboard.writeText(referralCode);
+    navigator.clipboard.writeText(getReferralLink());
     setCopied(true);
-    toast.success("Kode referral disalin!");
+    toast.success("Link referral disalin!");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareToWA = () => {
+    if (!isPremium) {
+      setUpgradeOpen(true);
+      return;
+    }
+    const text = `Yuk join geng Ramadan gue! Klik link ini: ${getReferralLink()}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
   };
 
   const medals = ["🥇", "🥈", "🥉"];
@@ -82,12 +96,20 @@ export default function LeaderboardSquad({
             {isPremium ? (
               <>
                 {copied ? <Check size={12} /> : <Copy size={12} />}
-                {copied ? "Tersalin!" : "Copy"}
+                {copied ? "Tersalin!" : "Salin Link Ajak 🔗"}
               </>
             ) : (
               "🔒 Lihat Kode"
             )}
           </button>
+          {isPremium && (
+            <button
+              onClick={handleShareToWA}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
+            >
+              <Share2 size={12} /> WA
+            </button>
+          )}
         </div>
       </div>
 
@@ -122,7 +144,7 @@ export default function LeaderboardSquad({
                 )}
                 <div className="flex-1 min-w-0">
                   <p className={`font-bold text-sm truncate ${isMe ? "text-primary" : "text-foreground"}`}>
-                    {entry.name} {isMe && "(Kamu)"}
+                    {entry.name} {isMe && " (Kamu)"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {level.emoji} {level.name}
