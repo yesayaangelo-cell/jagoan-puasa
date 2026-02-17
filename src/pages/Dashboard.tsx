@@ -5,7 +5,6 @@ import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_MISSIONS, getLevel } from "@/data/gameData";
 import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
-import LeaderboardSquad from "@/components/LeaderboardSquad";
 import AvatarPicker from "@/components/AvatarPicker";
 import UpgradeModal from "@/components/UpgradeModal";
 
@@ -195,9 +194,6 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
           userId={player.id}
           onAvatarChange={setCurrentAvatar}
         />
-
-        {/* Leaderboard Squad - visible to all */}
-        <LeaderboardSquad currentUserId={userId} isPremium={player.is_premium} />
       </div>
 
       {/* Upgrade Modal */}

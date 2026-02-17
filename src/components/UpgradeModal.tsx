@@ -46,9 +46,7 @@ export default function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) 
 
           <ul className="space-y-1.5 text-sm text-foreground">
             <li>✅ Tukar Poin di Toko Hadiah</li>
-            <li>✅ Gabung Geng & Leaderboard Squad</li>
             <li>✅ Avatar Jagoan Eksklusif</li>
-            <li>✅ Kode Referral Pribadi</li>
           </ul>
 
           <motion.button
