@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_REWARDS } from "@/data/gameData";
+import UpgradeModal from "@/components/UpgradeModal";
 
 interface ShopPageProps {
   player: Profile;
@@ -12,8 +13,14 @@ interface ShopPageProps {
 export default function ShopPage({ player, onSpend }: ShopPageProps) {
   const [showTicket, setShowTicket] = useState<string | null>(null);
   const [boughtItems, setBoughtItems] = useState<Set<string>>(new Set());
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const handleBuy = async (rewardId: string, cost: number, title: string) => {
+    if (!player.is_premium) {
+      setUpgradeOpen(true);
+      return;
+    }
+
     if (player.points < cost) return;
 
     const success = await onSpend(cost);
@@ -43,10 +50,19 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
         </motion.div>
       </div>
 
+      {/* Premium teaser badge for free users */}
+      {!player.is_premium && (
+        <div className="px-5 mt-4">
+          <div className="bg-gold/10 border border-gold/30 rounded-2xl p-3 text-center">
+            <p className="text-xs font-bold text-gold">🔒 Upgrade Premium untuk tukar poin!</p>
+          </div>
+        </div>
+      )}
+
       {/* Rewards */}
-      <div className="px-5 mt-6 space-y-3">
+      <div className="px-5 mt-4 space-y-3">
         {DEFAULT_REWARDS.map((reward, i) => {
-          const canBuy = player.points >= reward.cost && !boughtItems.has(reward.id);
+          const canBuy = player.is_premium && player.points >= reward.cost && !boughtItems.has(reward.id);
           const bought = boughtItems.has(reward.id);
           const isGrand = reward.isGrandPrize;
 
@@ -88,18 +104,20 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                 </div>
                 <motion.button
                   onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
-                  disabled={!canBuy}
+                  disabled={bought}
                   className={`w-full mt-3 px-4 py-3 rounded-xl font-black text-sm transition-all ${
                     bought
                       ? "bg-accent/20 text-accent"
                       : canBuy
                       ? "gradient-gold text-gold-foreground shadow-gold"
+                      : !player.is_premium
+                      ? "gradient-gold text-gold-foreground shadow-gold opacity-90"
                       : "bg-muted text-muted-foreground"
                   }`}
-                  whileHover={canBuy ? { scale: 1.03 } : {}}
-                  whileTap={canBuy ? { scale: 0.97 } : {}}
+                  whileHover={!bought ? { scale: 1.03 } : {}}
+                  whileTap={!bought ? { scale: 0.97 } : {}}
                 >
-                  {bought ? "✅ Dibeli" : `Tukar ${reward.cost} Poin`}
+                  {bought ? "✅ Dibeli" : !player.is_premium ? "🔒 Tukar Poin" : `Tukar ${reward.cost} Poin`}
                 </motion.button>
               </motion.div>
             );
@@ -126,23 +144,28 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
               </div>
               <motion.button
                 onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
-                disabled={!canBuy}
+                disabled={bought}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   bought
                     ? "bg-accent/20 text-accent"
                     : canBuy
                     ? "gradient-hero text-primary-foreground shadow-button"
+                    : !player.is_premium
+                    ? "gradient-hero text-primary-foreground shadow-button opacity-90"
                     : "bg-muted text-muted-foreground"
                 }`}
-                whileHover={canBuy ? { scale: 1.05 } : {}}
-                whileTap={canBuy ? { scale: 0.95 } : {}}
+                whileHover={!bought ? { scale: 1.05 } : {}}
+                whileTap={!bought ? { scale: 0.95 } : {}}
               >
-                {bought ? "✅ Dibeli" : "Beli"}
+                {bought ? "✅ Dibeli" : !player.is_premium ? "🔒 Beli" : "Beli"}
               </motion.button>
             </motion.div>
           );
         })}
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
 
       {/* Golden Ticket Overlay */}
       <AnimatePresence>

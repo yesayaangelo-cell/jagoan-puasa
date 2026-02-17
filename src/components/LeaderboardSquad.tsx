@@ -4,6 +4,7 @@ import { Copy, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getLevel } from "@/data/gameData";
 import { toast } from "sonner";
+import UpgradeModal from "@/components/UpgradeModal";
 
 interface LeaderEntry {
   id: string;
@@ -12,11 +13,18 @@ interface LeaderEntry {
   avatar: string;
 }
 
-export default function LeaderboardSquad({ currentUserId }: { currentUserId: string }) {
+export default function LeaderboardSquad({
+  currentUserId,
+  isPremium,
+}: {
+  currentUserId: string;
+  isPremium: boolean;
+}) {
   const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +48,10 @@ export default function LeaderboardSquad({ currentUserId }: { currentUserId: str
   }, [currentUserId]);
 
   const handleCopyReferral = () => {
+    if (!isPremium) {
+      setUpgradeOpen(true);
+      return;
+    }
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
     toast.success("Kode referral disalin!");
@@ -61,14 +73,20 @@ export default function LeaderboardSquad({ currentUserId }: { currentUserId: str
         <p className="font-black text-sm text-foreground">📨 Ajak Teman Gabung Geng!</p>
         <div className="flex items-center justify-center gap-2">
           <span className="px-3 py-1.5 rounded-lg bg-muted font-mono font-black text-foreground text-sm tracking-widest">
-            {referralCode}
+            {isPremium ? referralCode : "••••••"}
           </span>
           <button
             onClick={handleCopyReferral}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors"
           >
-            {copied ? <Check size={12} /> : <Copy size={12} />}
-            {copied ? "Tersalin!" : "Copy"}
+            {isPremium ? (
+              <>
+                {copied ? <Check size={12} /> : <Copy size={12} />}
+                {copied ? "Tersalin!" : "Copy"}
+              </>
+            ) : (
+              "🔒 Lihat Kode"
+            )}
           </button>
         </div>
       </div>
@@ -112,6 +130,9 @@ export default function LeaderboardSquad({ currentUserId }: { currentUserId: str
           })}
         </div>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>
   );
 }
