@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Lock, Star, MapPin } from "lucide-react";
 
 // Dummy: Ramadan day 1 starts today. Adjust as needed.
-const RAMADAN_START = new Date("2026-02-15");
+const RAMADAN_START = new Date("2026-02-16");
 const TOTAL_DAYS = 30;
 
 function getCurrentDay(): number {
