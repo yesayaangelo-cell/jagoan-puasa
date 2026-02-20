@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Lock, Star, MapPin } from "lucide-react";
 
 // Set start of Ramadan to Feb 19, 2026, in the local timezone.
-const RAMADAN_START = new Date(2026, 1, 19); // Month is 0-indexed (1 = February)
+const RAMADAN_START = new Date('2026-02-19T00:00:00'); 
 const TOTAL_DAYS = 30;
 
 function getCurrentDay(): number {
