@@ -1,15 +1,19 @@
 import { motion } from "framer-motion";
 import { Lock, Star, MapPin } from "lucide-react";
 
-// Dummy: Ramadan day 1 starts today. Adjust as needed.
-const RAMADAN_START = new Date("2026-02-16");
+// Set start of Ramadan to Feb 19, 2026, in the local timezone.
+const RAMADAN_START = new Date(2026, 1, 19); // Month is 0-indexed (1 = February)
 const TOTAL_DAYS = 30;
 
 function getCurrentDay(): number {
   const now = new Date();
-  const diff = Math.floor((now.getTime() - RAMADAN_START.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(1, Math.min(diff + 1, TOTAL_DAYS));
+  // To ensure we are comparing just dates, set the time to the start of the day.
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffTime = startOfToday.getTime() - RAMADAN_START.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, Math.min(diffDays + 1, TOTAL_DAYS));
 }
+
 
 type NodeStatus = "completed" | "current" | "locked";
 
