@@ -6,7 +6,6 @@ import { DEFAULT_MISSIONS, getLevel } from "@/data/gameData";
 import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
 import AvatarPicker from "@/components/AvatarPicker";
-import UpgradeModal from "@/components/UpgradeModal";
 import Leaderboard from "@/components/Leaderboard";
 
 interface DashboardProps {
@@ -38,7 +37,6 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
   const [copied, setCopied] = useState(false);
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState(player.avatar);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const level = getLevel(player.points);
 
   const handleComplete = (missionId: string, points: number) => {
@@ -102,8 +100,8 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
     copyToClipboard(userId);
   };
 
-  const handleUpgrade = () => {
-    const text = encodeURIComponent(`Halo Admin, saya mau aktifkan Premium Jagoan Puasa. Mohon dibantu. User ID: ${userId}`);
+  const handleDonation = () => {
+    const text = encodeURIComponent(`Assalamu'alaikum Min, aplikasinya keren! Saya mau kasih dukungan/donasi untuk pengembangan Jagoan Puasa biar tetap gratis. User ID anak saya: ${userId}`);
     const link = document.createElement("a");
     link.href = `https://wa.me/6285157778929?text=${text}`;
     link.target = "_blank";
@@ -140,7 +138,7 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
             </motion.div>
             {player.is_premium && (
               <span className="px-3 py-1 rounded-full gradient-gold text-gold-foreground text-xs font-black">
-                ⭐ PREMIUM
+                😇 DONATUR BAIK
               </span>
             )}
           </div>
@@ -166,20 +164,18 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
         </motion.div>
       </div>
 
-      {/* Features section - visible to all */}
+      {/* Features section */}
       <div className="px-5 mt-4 space-y-3">
-        {!player.is_premium && (
-          <motion.button
-            onClick={handleUpgrade}
+        <motion.button
+            onClick={handleDonation}
             className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            ⭐ UPGRADE PREMIUM (Rp 19.000)
+            🥤 Traktir Mimin Es Campur (Donasi)
           </motion.button>
-        )}
 
-        {/* Avatar Editor Section - visible to all, gated on click */}
+        {/* Avatar Editor Section */}
         <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
           <h3 className="text-base font-black text-foreground text-center mb-3">
             🎨 Avatar Jagoan Lo
@@ -193,19 +189,13 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
               )}
             </div>
             <motion.button
-              onClick={() => {
-                if (!player.is_premium) {
-                  setUpgradeOpen(true);
-                } else {
-                  setAvatarPickerOpen(true);
-                }
-              }}
+              onClick={() => setAvatarPickerOpen(true)}
               className="px-5 py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <Palette size={16} />
-              {player.is_premium ? "Ganti Gaya 👕" : "🔒 Ganti Gaya"}
+              Ganti Gaya 👕
             </motion.button>
           </div>
         </div>
@@ -218,9 +208,6 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
           onAvatarChange={setCurrentAvatar}
         />
       </div>
-
-      {/* Upgrade Modal */}
-      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
 
       {/* Missions */}
       <div className="px-5 mt-6">
