@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 type LeaderboardEntry = {
   id: string;
   name: string;
-  avatar_url: string | null;
+  avatar: string | null;
   points: number;
 };
 
@@ -22,7 +22,7 @@ const Leaderboard = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, name, avatar_url, points")
+          .select("id, name, avatar, points")
           .order("points", { ascending: false })
           .limit(10);
 
@@ -106,7 +106,7 @@ const Leaderboard = () => {
               <div className="flex items-center space-x-4">
                 <span className="text-lg font-bold w-6">{index + 1}</span>
                 <Avatar>
-                  <AvatarImage src={user.avatar_url || ''} alt={user.name} />
+                  <AvatarImage src={user.avatar || ''} alt={user.name} />
                   <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
                 <span className="font-medium">{user.name}</span>
