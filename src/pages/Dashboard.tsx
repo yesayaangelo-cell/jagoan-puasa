@@ -162,13 +162,11 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
       {/* Features section */}
       <div className="px-5 mt-4 space-y-3">
         <motion.button
-            onClick={handleDonation}
-            className="w-full py-3 rounded-2xl gradient-gold text-gold-foreground font-black text-sm shadow-gold"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            🥤 Traktir Mimin Es Campur (Donasi)
-          </motion.button>
+          onClick={handleDonation}
+          className="w-full px-6 py-4 rounded-2xl gradient-gold text-gold-foreground font-black text-lg shadow-lg animate-pulse transition-transform transform hover:scale-105 active:scale-95"
+        >
+          🥤 Traktir Mimin Es Campur (Donasi)
+        </motion.button>
 
         {/* Avatar Editor Section */}
         <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
