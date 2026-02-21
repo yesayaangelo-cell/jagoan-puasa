@@ -7,6 +7,7 @@ import { Copy, Check, Palette } from "lucide-react";
 import { toast } from "sonner";
 import AvatarPicker from "@/components/AvatarPicker";
 import UpgradeModal from "@/components/UpgradeModal";
+import Leaderboard from "@/components/Leaderboard";
 
 interface DashboardProps {
   player: Profile;
@@ -268,6 +269,11 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
             })}
           </AnimatePresence>
         </div>
+      </div>
+      
+      {/* Leaderboard Section */}
+      <div className="px-5 mt-6">
+        <Leaderboard />
       </div>
 
       {/* User ID Display */}
