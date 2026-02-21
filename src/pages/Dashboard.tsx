@@ -101,12 +101,7 @@ export default function Dashboard({ player, userId, onAddPoints }: DashboardProp
   };
 
   const handleDonation = () => {
-    const text = encodeURIComponent(`Assalamu'alaikum Min, aplikasinya keren! Saya mau kasih dukungan/donasi untuk pengembangan Jagoan Puasa biar tetap gratis. User ID anak saya: ${userId}`);
-    const link = document.createElement("a");
-    link.href = `https://wa.me/6285157778929?text=${text}`;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.click();
+    window.open('https://sociabuzz.com/ecpcorp/tribe', '_blank');
   };
 
   return (
