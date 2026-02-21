@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import type { Profile } from "@/hooks/usePlayer";
 import { DEFAULT_REWARDS } from "@/data/gameData";
-import UpgradeModal from "@/components/UpgradeModal";
 
 interface ShopPageProps {
   player: Profile;
@@ -13,7 +12,6 @@ interface ShopPageProps {
 export default function ShopPage({ player, onSpend }: ShopPageProps) {
   const [showTicket, setShowTicket] = useState<string | null>(null);
   const [boughtItems, setBoughtItems] = useState<Set<string>>(new Set());
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const handleBuy = async (rewardId: string, cost: number, title: string) => {
     if (player.points < cost) return;
@@ -33,10 +31,6 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
     setTimeout(() => setShowTicket(null), 2500);
   };
 
-  const handleUpgrade = () => {
-    setUpgradeOpen(true);
-  };
-
   return (
     <div className="min-h-screen pb-24 bg-background">
       {/* Header */}
@@ -49,23 +43,10 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
         </motion.div>
       </div>
 
-      {/* Premium teaser badge for free users */}
-      {!player.is_premium && (
-        <div className="px-5 mt-4">
-          <button
-            onClick={handleUpgrade}
-            className="w-full text-left bg-gold/10 border border-gold/30 rounded-2xl p-3 text-center transition-colors hover:bg-gold/20 hover:border-gold/40"
-          >
-            <p className="text-xs font-bold text-gold">🔒 Upgrade Premium untuk tukar poin!</p>
-            <p className="text-xs text-gold/80 mt-1">Klik di sini untuk melihat opsi upgrade dan membuka semua hadiah.</p>
-          </button>
-        </div>
-      )}
-
       {/* Rewards */}
       <div className="px-5 mt-4 space-y-3">
         {DEFAULT_REWARDS.map((reward, i) => {
-          const canBuy = player.is_premium && player.points >= reward.cost && !boughtItems.has(reward.id);
+          const canBuy = player.points >= reward.cost && !boughtItems.has(reward.id);
           const bought = boughtItems.has(reward.id);
           const isGrand = reward.isGrandPrize;
 
@@ -107,21 +88,19 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
                 </div>
                 <motion.button
                   onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
-                  disabled={bought || !player.is_premium || player.points < reward.cost}
+                  disabled={bought || player.points < reward.cost}
                   className={`w-full mt-3 px-4 py-3 rounded-xl font-black text-sm transition-all ${
                     bought
                       ? "bg-accent/20 text-accent"
-                      : !player.is_premium || player.points < reward.cost
+                      : player.points < reward.cost
                       ? "bg-muted text-muted-foreground"
                       : "gradient-gold text-gold-foreground shadow-gold"
                   }`}
-                  whileHover={!bought && player.is_premium && player.points >= reward.cost ? { scale: 1.03 } : {}}
-                  whileTap={!bought && player.is_premium && player.points >= reward.cost ? { scale: 0.97 } : {}}
+                  whileHover={!bought && canBuy ? { scale: 1.03 } : {}}
+                  whileTap={!bought && canBuy ? { scale: 0.97 } : {}}
                 >
                   {bought
                     ? "✅ Dibeli"
-                    : !player.is_premium
-                    ? "🔒 Premium Saja"
                     : player.points < reward.cost
                     ? "Poin Tidak Cukup"
                     : `Tukar ${reward.cost} Poin`}
@@ -151,21 +130,19 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
               </div>
               <motion.button
                 onClick={() => handleBuy(reward.id, reward.cost, reward.title)}
-                disabled={bought || !player.is_premium || player.points < reward.cost}
+                disabled={bought || player.points < reward.cost}
                 className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                   bought
                     ? "bg-accent/20 text-accent"
-                    : !player.is_premium || player.points < reward.cost
+                    : player.points < reward.cost
                     ? "bg-muted text-muted-foreground"
                     : "gradient-hero text-primary-foreground shadow-button"
                 }`}
-                whileHover={!bought && player.is_premium && player.points >= reward.cost ? { scale: 1.05 } : {}}
-                whileTap={!bought && player.is_premium && player.points >= reward.cost ? { scale: 0.95 } : {}}
+                whileHover={!bought && canBuy ? { scale: 1.05 } : {}}
+                whileTap={!bought && canBuy ? { scale: 0.95 } : {}}
               >
                 {bought
                   ? "✅ Dibeli"
-                  : !player.is_premium
-                  ? "🔒 Premium"
                   : player.points < reward.cost
                   ? "Poin Kurang"
                   : "Beli"}
@@ -174,9 +151,6 @@ export default function ShopPage({ player, onSpend }: ShopPageProps) {
           );
         })}
       </div>
-
-      {/* Upgrade Modal */}
-      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
 
       {/* Golden Ticket Overlay */}
       <AnimatePresence>
